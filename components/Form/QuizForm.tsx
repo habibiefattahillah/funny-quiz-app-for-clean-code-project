@@ -1,17 +1,18 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 
 import TextInput from "./FormInput/TextInput";
 import DropdownInput from "./FormInput/DropdownInput";
 import { useQuizGenerator } from "@/utils/quizUtils";
+import { useFormInput, useFormSubmitValidation } from "@/utils/formUtils";
 import {
   categoryList,
   difficultyList,
   typeList,
 } from "@/constants/quizFormConstants";
-import { useFormInput, useFormSubmitValidation } from "@/utils/formUtils";
+import { validateAmount } from "./ValidationRules";
 
 type QuizFormProps = {
-  onQuizGenerated: () => void;
+  cyclePage: () => void;
 };
 
 const initialFormInput = {
@@ -21,44 +22,31 @@ const initialFormInput = {
   type: "any",
 };
 
-const QuizForm = ({ onQuizGenerated }: QuizFormProps) => {
+const QuizForm = ({ cyclePage }: QuizFormProps) => {
   const generateQuiz = useQuizGenerator();
   const { validateFormSubmit, errorMessage } = useFormSubmitValidation();
-
-  const validateAmount = (value: string) => {
-    let amount = Math.min(
-      Math.max(isNaN(parseInt(value)) ? 0 : parseInt(value), 0),
-      20
-    );
-    return amount.toString();
+  const rules = {
+    amount: validateAmount,
   };
 
-  const validateInput = (name: string, value: string) => {
-    if (name === "amount") return validateAmount(value);
-    return value;
-  };
-
-  const { formInput, handleInputChange } = useFormInput(
+  const { formInput, handleInputChange } = useFormInput({
     initialFormInput,
-    validateInput
-  );
+    rules,
+  });
 
   const errorMessages: { [key: string]: boolean } = {
-    "Amount must be greater than 0": formInput.amount == "0",
+    "Amount must be greater than 0": parseInt(formInput.amount) <= 0,
   };
 
   const handleQuizFormSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      const isFormValid = validateFormSubmit(errorMessages);
-      if (!isFormValid) return;
+      if (!validateFormSubmit(errorMessages)) return;
 
-      await generateQuiz({
-        ...formInput,
-      });
+      await generateQuiz(formInput);
 
-      onQuizGenerated();
+      cyclePage();
     },
     [formInput]
   );
@@ -69,7 +57,7 @@ const QuizForm = ({ onQuizGenerated }: QuizFormProps) => {
       className="my-4 bg-gray-200 px-4 py-2 rounded-lg shadow-md"
     >
       <TextInput
-        label="Amount"
+        label="Number of Questions"
         name="amount"
         value={formInput.amount}
         onChange={handleInputChange}

@@ -3,16 +3,16 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setScore } from "@/lib/features/quiz/quizSlice";
 
 interface ResultPageProps {
-  onReturn: () => void;
+  cyclePage: () => void;
 }
 
-const ResultPage = ({ onReturn }: ResultPageProps) => {
+const ResultPage = ({ cyclePage }: ResultPageProps) => {
   const { score } = useAppSelector((state) => state.quiz);
   const dispatch = useAppDispatch();
 
   const handlePlayAgain = () => {
     dispatch(setScore(0));
-    onReturn();
+    cyclePage();
   };
 
   return (

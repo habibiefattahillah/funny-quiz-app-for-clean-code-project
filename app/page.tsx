@@ -26,15 +26,15 @@ export default function Home() {
       {page === "form" && (
         <>
           <h1 className="text-3xl font-bold">Pop Quiz !</h1>
-          <QuizForm onQuizGenerated={() => cyclePage()} />
+          <QuizForm cyclePage={() => cyclePage()} />
           <p className="font-semibold">
             Achmad Habibie Fattahillah - 3121600018
           </p>
           <p>With Open Triviata Database API</p>
         </>
       )}
-      {page === "quiz" && <QuizPage onFinish={() => cyclePage()} />}
-      {page === "result" && <ResultPage onReturn={() => cyclePage()} />}
+      {page === "quiz" && <QuizPage cyclePage={() => cyclePage()} />}
+      {page === "result" && <ResultPage cyclePage={() => cyclePage()} />}
     </main>
   );
 }

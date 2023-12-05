@@ -3,10 +3,10 @@ import { useAppSelector } from "@/lib/hooks";
 import QuizAnswers from "./QuizAnswers/QuizAnswers";
 
 interface QuizPageProps {
-  onFinish: () => void;
+  cyclePage: () => void;
 }
 
-const QuizPage: React.FC<QuizPageProps> = ({ onFinish }) => {
+const QuizPage: React.FC<QuizPageProps> = ({ cyclePage }) => {
   const { quizDatas, score } = useAppSelector((state) => state.quiz);
   const [currentQuestion, setCurrentQuestion] = useState(0);
 
@@ -14,9 +14,9 @@ const QuizPage: React.FC<QuizPageProps> = ({ onFinish }) => {
     if (currentQuestion < quizDatas.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
-      onFinish();
+      cyclePage();
     }
-  }, [currentQuestion, quizDatas.length, onFinish]);
+  }, [currentQuestion]);
 
   return (
     <div className="flex flex-col items-center justify-center w-screen h-screen">

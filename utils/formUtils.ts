@@ -26,16 +26,37 @@ type FormInput = {
   [key: string]: string;
 };
 
-export const useFormInput = (
-  initialFormInput: FormInput,
-  validateInput: (name: string, value: string) => string
-) => {
-  const [formInput, setFormInput] = useState<FormInput>(initialFormInput);
+type ValidationRules = {
+  [key: string]: (value: string) => string;
+};
+
+interface UseFormInputProps {
+  initialFormInput?: FormInput;
+  rules?: ValidationRules;
+}
+
+export const useFormInput = ({
+  initialFormInput,
+  rules,
+}: UseFormInputProps) => {
+  const [formInput, setFormInput] = useState<FormInput>(
+    initialFormInput ? initialFormInput : {}
+  );
+
+  const validateInput = (
+    name: string,
+    value: string,
+    rules: ValidationRules
+  ) => {
+    const validate = rules[name];
+    if (validate) return validate(value);
+    return value;
+  };
 
   const handleInputChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
       const { name, value } = event.target;
-      const validatedValue = validateInput ? validateInput(name, value) : value;
+      const validatedValue = rules ? validateInput(name, value, rules) : value;
       setFormInput((prevFormInput) => ({
         ...prevFormInput,
         [name]: validatedValue,
